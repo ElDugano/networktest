@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import Peer from 'peerjs';
 
 function App() {
   const [myPeerID, setMyPeerID] = useState(null);     //This is the browser's own connection ID.
