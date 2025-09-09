@@ -4,47 +4,34 @@ import Peer from 'peerjs';
 
 function App() {
   const [myPeerID, setMyPeerID] = useState(null);     //This is the browser's own connection ID.
-    const [peer, setPeer] = useState(null);           //This is an object to connect?
-  console.log("My Peer ID State is: "+myPeerID);
-  console.log("This is what peer is:");
-  console.log(peer);
-
+  const [peer, setPeer] = useState(null);             //This is an object to connect?
+  const [conn, setConn] = useState(null);               //This is the connection object.
+  const [isHost, setIsHost] = useState(false);          //This is set to true if the browser is the host.
+  const [connectionID, setConnectionID] = useState(""); //This is taken from the input field.
+  console.log("------------------");
 
   useEffect(() => {
+    console.log("Startin useEffect");
     if(myPeerID == null) {
       var newPeer = new Peer();
       newPeer.on('open', function(id) {
         console.log('My peer ID is: ' + id);
         setMyPeerID(id);
       });
+      console.log("NEST!");
       setPeer(newPeer);
     }
-  }, []);
-
-  
-
-
-
-  //var conn = null;
-  const [conn, setConn] = useState(null);               //This is the connection object.
-  const [isHost, setIsHost] = useState(false);          //This is set to true if the browser is the host.
-  const [connectionID, setConnectionID] = useState(""); //This is taken from the input field.
-  
+  }, [myPeerID]);
 
   if (myPeerID != null) {
-    let newConn;
     peer.on('connection', function(newConn) {
-      console.log("Waiting for a connection, which should be shown below.");
+      console.log("We just connected!");
       console.log(newConn);
       setConn(newConn);
       setIsHost(true);
     });
   }
 
-
-
-  console.log("This is what conn is: ");
-  console.log(conn);
   if (conn != null) {
     conn.on('open', function() {
       // Receive messages
