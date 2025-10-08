@@ -3,7 +3,8 @@ import { NetworkingMessageSenderContext } from "./NetworkingMessageSenderContext
 import { NetworkingContext } from "../NetworkingContext";
 
 export const NetworkingMessageSender = ( props ) => {
-  const {conn} = useContext(NetworkingContext);
+  //console.log("NETWORKING MESSAGE SENDER IS RENDERING.")
+  const { conn } = useContext(NetworkingContext);
   
   const [messagePayload, setMessagePayload] = useState([]);
   const [sendMessages, setSendMessages] = useState(false);

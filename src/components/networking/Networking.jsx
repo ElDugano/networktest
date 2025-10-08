@@ -2,6 +2,7 @@ import { useState, useEffect/*, useContext*/ } from "react"
 import { NetworkingContext } from "./NetworkingContext.js";
 
 import { NetworkingMessageSender } from './messageSender/NetworkingMessageSender.jsx'
+import { HostPing } from './messageSender/HostPing.jsx'
 
 export const Networking = (props) => {
   const [newestConn, setNewestConn] = useState(null);
@@ -92,13 +93,13 @@ export const Networking = (props) => {
       }
     }
     if(disconnectingPlayer) {
-      console.log("The player that is not connected is", disconnectingPlayer);
-      console.log(conn);
+      //console.log("The player that is not connected is", disconnectingPlayer);
+      //console.log(conn);
       setDisconnectingPlayer(null);
       conn.forEach((element, index) => {
         console.log(element.peer);
         if(element.peer == disconnectingPlayer) {
-          console.log("making this update");
+          //console.log("making this update");
           //let newConn = [...conn];
           //newConn.splice(index, 1);
           //setConn(newConn);
@@ -133,6 +134,7 @@ export const Networking = (props) => {
     disconnectedPlayers
   }}>
     <NetworkingMessageSender isHost={props.isHost} numberOfClients={conn != null ? conn.length : 0}>
+      <HostPing isHost={props.isHost} />
       {props.children}
     </NetworkingMessageSender>
   </NetworkingContext.Provider>
