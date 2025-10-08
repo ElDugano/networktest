@@ -1,7 +1,7 @@
 import { useState, useEffect/*, useContext*/ } from "react"
-import { NetworkingContext } from "./NetworkingContext";
+import { NetworkingContext } from "./NetworkingContext.js";
 
-import { NetworkingMessageSender } from '../Display/NetworkingMessageSender.jsx'
+import { NetworkingMessageSender } from './messageSender/NetworkingMessageSender.jsx'
 
 export const Networking = (props) => {
   const [newestConn, setNewestConn] = useState(null);
@@ -24,7 +24,7 @@ export const Networking = (props) => {
     }
 
     if(newestConn != null) {
-      if(props.isDisplay == true){
+      if(props.isHost == true){
         let reconnectingPlayer = null;
         conn.forEach((testConn, connPlayer) => {
           if (testConn.peer == newestConn.peer) { //This is a reconnection.
@@ -76,7 +76,7 @@ export const Networking = (props) => {
         setConn(newConn);
         setNewestConn(null);
       }
-      else if(props.isDisplay == false){
+      else if(props.isHost == false) {
         //alert("going to open the newestConn.on");
         newestConn.on('open', function() {
           // Receive messages
@@ -111,18 +111,28 @@ export const Networking = (props) => {
     clearMessage();
   }, [conn, props, newestConn, recievedMessages, disconnectingPlayer, disconnectedPlayers]);
 
+  const getMessageHeader = () => {
+    if (recievedMessages != null) {
+      if ("header" in recievedMessages)
+        return recievedMessages.header;
+      return true; //True, there is a message.
+    }
+      return false; //False, there is no message.
+  }
+
   return <NetworkingContext.Provider value={{
     conn,
     setConn,
     setNewestConn,
     recievedMessages,
     recievedMessagesPlayer,
+    getMessageHeader,
     hostPeerIDPrefix,
     setReconnectingPlayer, //This was used to send an updated payload of info to the reconnecting player
     reconnectingPlayer, //This was used to send an updated payload of info to the reconnecting player
     disconnectedPlayers
   }}>
-    <NetworkingMessageSender isDisplay={props.isDisplay} numberOfClients={conn != null ? conn.length : 0}>
+    <NetworkingMessageSender isHost={props.isHost} numberOfClients={conn != null ? conn.length : 0}>
       {props.children}
     </NetworkingMessageSender>
   </NetworkingContext.Provider>

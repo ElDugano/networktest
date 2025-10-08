@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Peer from 'peerjs';
 
-export default function NetworkingDisplaySetup(props) {
+export default function NetworkingHostSetup(props) {
   const [myPeerID, setMyPeerID] = useState(null);
 
   useEffect(() => {

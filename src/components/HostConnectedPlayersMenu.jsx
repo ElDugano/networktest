@@ -1,16 +1,24 @@
 import { useContext } from "react"
-import { NetworkingContext } from "./State/NetworkingContext";
+import { NetworkingContext } from "./networking/NetworkingContext";
 
-export default function DisplayConnectedPlayersMenu() {
+export default function HostConnectedPlayersMenu() {
   const {conn, disconnectedPlayers} = useContext(NetworkingContext);
   let content = []
   disconnectedPlayers.forEach((element, player) => {
     if (disconnectedPlayers[player] == true) {
       console.log("####we got one####");
-      content.push(<div style={{"color":"red"}}>Player {player} - {conn[player].peer}</div>)
+      content.push (
+        <div key={crypto.randomUUID()} style={{"color":"red"}}>
+          Player {player} - {conn[player].peer}
+        </div>
+      )
     }
     else
-      content.push(<div>Player {player} - {conn[player].peer}</div>)
+      content.push (
+        <div key={crypto.randomUUID()}>
+          Player {player} - {conn[player].peer}
+        </div>
+      )
   });
   return(
     <div>

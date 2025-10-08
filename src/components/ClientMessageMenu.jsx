@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { NetworkingMessageSenderContext } from "./Display/NetworkingMessageSenderContext"
+import { NetworkingMessageSenderContext } from "./networking/messageSender/NetworkingMessageSenderContext"
 
 export default function ClientMessageMenu() {
   const { addToMessagePayloadToHost, sendTheMessages } = useContext(NetworkingMessageSenderContext);
@@ -7,7 +7,7 @@ export default function ClientMessageMenu() {
     //addToMessagePayloadToHost({textMessage: "HELLO WORLD"});
     //addToMessagePayloadToHost({textMessage2: "HELLO WORLD2"});
     addToMessagePayloadToHost("Message");
-    sendTheMessages();
+    sendTheMessages("My sweet header");
   }
 
   return (

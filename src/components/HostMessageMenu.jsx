@@ -1,7 +1,7 @@
 import { useContext } from "react"
-import { NetworkingMessageSenderContext } from "./Display/NetworkingMessageSenderContext"
+import { NetworkingMessageSenderContext } from "./networking/messageSender/NetworkingMessageSenderContext"
 
-export default function DisplayMessageMenu() {
+export default function HostMessageMenu() {
   const { addToMessagePayloadToAllPlayers, sendTheMessages } = useContext(NetworkingMessageSenderContext);
   const sendAMessage = () => {
     //addToMessagePayloadToAllPlayers({textMessage: "HELLO WORLD"});

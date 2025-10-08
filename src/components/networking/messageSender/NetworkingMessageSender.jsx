@@ -1,12 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { NetworkingMessageSenderContext } from "./NetworkingMessageSenderContext"
-import { NetworkingContext } from "../State/NetworkingContext";
+import { NetworkingContext } from "../NetworkingContext";
 
 export const NetworkingMessageSender = ( props ) => {
-  const {conn, isDisplay} = useContext(NetworkingContext);
+  const {conn} = useContext(NetworkingContext);
   
   const [messagePayload, setMessagePayload] = useState([]);
   const [sendMessages, setSendMessages] = useState(false);
+  const [messageHeader, setMessageHeader] = useState("Default Header");
 
   const sendObjectToHost = (message) => {
     console.log("We are sending the object ", message);
@@ -44,33 +45,44 @@ export const NetworkingMessageSender = ( props ) => {
       return newMessageArray;
     });
   }
-  const sendTheMessages = () => {
+  const sendTheMessages = (newMessageHeader = messageHeader) => {
     setSendMessages(true);
+    setMessageHeader(newMessageHeader);
   }
 
   useEffect(() => {
     if(sendMessages != false) {
-      if (props.isDisplay) {
+      if (props.isHost) {
         messagePayload.forEach((playerMessages, player) => {
           if(conn[player])
+            {
+            if (!("header" in playerMessages))
+              playerMessages.header = messageHeader;
             conn[player].send(playerMessages);
+          }
         })
       }
-      else
-        conn.send(messagePayload[0]);
+      else {
+        let message = messagePayload[0]
+        if (!("header" in message))
+          message.header = messageHeader;
+        conn.send(message);
+      }
       setSendMessages(false);
+      setMessageHeader("Default Header");
       const newArray = Array.from({ length: props.numberOfClients }, () => []);
       setMessagePayload(newArray);
     }
 
     messagePayload
-  }, [conn, sendMessages, isDisplay, messagePayload, props])
+  }, [conn, sendMessages, messagePayload, props, messageHeader])
 
   return <NetworkingMessageSenderContext.Provider value={{
       sendObjectToHost,
       addToMessagePayloadToHost,
       addToMessagePayloadToPlayer,
       addToMessagePayloadToAllPlayers,
+      setMessageHeader,
       sendTheMessages
     }}>
       {props.children}
