@@ -7,8 +7,7 @@ export const Networking = (props) => {
   if (props.isHost == false) {
     return (
       <NetworkingClient
-        pingHeader={pingHeader} /*getMessageHeader={getMessageHeader}*/
-
+        pingHeader={pingHeader}
       >
         {props.children}
       </NetworkingClient>
@@ -17,7 +16,7 @@ export const Networking = (props) => {
   else if (props.isHost == true) {
     return (
       <NetworkingHost
-        pingHeader={pingHeader} /*getMessageHeader={getMessageHeader}*/
+        pingHeader={pingHeader}
       >
         {props.children}
       </NetworkingHost>
