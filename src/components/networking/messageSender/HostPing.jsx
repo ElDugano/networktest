@@ -1,32 +1,46 @@
-import { useEffect, useContext, memo, useRef } from "react"
-import { HostPingContext } from "./HostPingContext"
+import { useEffect, useContext, useState } from "react"
 import { NetworkingContext } from "../NetworkingContext";
 
-export const HostPing = memo(( props ) => {
+export default function HostPing(props) {
   const { conn, disconnectedPlayers} = useContext(NetworkingContext);
+  const [ needToSendPing, setNeedToSendPing ] = useState(false);
+  const [ needToCheckPing, setNeedToCheckPing ] = useState(true);
 
   const secondsBetweenPings = 5;
+  const maxMissedPings = 3
 
-  let pingInterval = useRef(null);
+  //let pingInterval = useRef(null);
+  //let pingReturned = useRef([]);
   useEffect(() => {
-    const pingPlayers = () => {
+    if (props.recievedPing.length > 0 && needToCheckPing == true) {
+      let newRecievedPing = [...props.recievedPing];
+      newRecievedPing.forEach((value, index) => {
+        newRecievedPing[index]++;
+        if(newRecievedPing[index] >= maxMissedPings) {
+          console.log("Shit man, this person isn't here anymore: Player "+ index);
+          
+          props.setDisconnectedPlayers(prevDisconnectedPlayers => {
+            let newDisconnectedPlayers = [...prevDisconnectedPlayers];
+            newDisconnectedPlayers[index] = true;
+            return newDisconnectedPlayers;
+          });
+        }
+      })
+      props.setRecievedPing(newRecievedPing);
+      setNeedToCheckPing(false);
+      setTimeout(() => {setNeedToSendPing(true)}, secondsBetweenPings * 1000);
+    }
+    else if (props.recievedPing.length > 0 && needToSendPing == true) {
       conn.forEach((playerConn, index) => {
-        if (disconnectedPlayers[index] != true)
-          playerConn.send({header:"Ping"})
+        if (disconnectedPlayers[index] != true) {
+          playerConn.send({header:props.pingHeader});
+        }
       })
       console.log("Sending a ping");
-      pingInterval.current = setTimeout(pingPlayers, secondsBetweenPings * 1000);
+      setNeedToSendPing(false);
+      setNeedToCheckPing(true);
     }
-    if(props.isHost == true && conn.length > 0)
-      pingInterval.current = setTimeout(pingPlayers, secondsBetweenPings * 1000);
-    return () => {
-      clearTimeout(pingInterval.current);
-    };
-  }, [conn, props, disconnectedPlayers])
+  }, [conn, props, disconnectedPlayers, needToSendPing, needToCheckPing])
 
-  return <HostPingContext.Provider value={{}}>
-      {props.children}
-    </HostPingContext.Provider>
-});
-
-export default HostPing
+  return <></>
+}

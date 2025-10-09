@@ -2,25 +2,30 @@ import { useState, useEffect/*, useContext*/ } from "react"
 import { NetworkingContext } from "./NetworkingContext.js";
 
 import { NetworkingMessageSender } from './messageSender/NetworkingMessageSender.jsx'
-import { HostPing } from './messageSender/HostPing.jsx'
+import  HostPing  from './messageSender/HostPing.jsx'
+import  ClientPing  from './messageSender/ClientPing.jsx'
 
 export const Networking = (props) => {
   const [newestConn, setNewestConn] = useState(null);
   const [conn, setConn] = useState(null);
+
   const [recievedMessages, setRecievedMessages] = useState(null);
   const [recievedMessagesPlayer, setRecievedMessagesPlayer] = useState(null);
+  const [recievedPing, setRecievedPing] = useState([]);
+
   const [reconnectingPlayer, setReconnectingPlayer] = useState(null);
   const [disconnectingPlayer, setDisconnectingPlayer] = useState(null);
   const [disconnectedPlayers, setDisconnectedPlayers] = useState([]);
-  const hostPeerIDPrefix = "elduganocatangame-";
 
-  
+  const hostPeerIDPrefix = "elduganocatangame-";
+  const pingHeader = "Test Still connected Ping"
+
   useEffect(() => {
     const clearMessage = () => {
       if (recievedMessages != null) {
         setRecievedMessages(null);
         setRecievedMessagesPlayer(null);
-        console.log("I just cleared out the messages I recieved");
+        //console.log("I just cleared out the messages I recieved");
       }
     }
 
@@ -39,18 +44,43 @@ export const Networking = (props) => {
           let newDisconnectedPlayers = [...disconnectedPlayers];
           newDisconnectedPlayers.push(false);
           setDisconnectedPlayers(newDisconnectedPlayers);
+          console.log("We just set up DisconnectedPlayers:",newDisconnectedPlayers);
+
+          //let newRecievedPing = [...recievedPing];
+          //newRecievedPing.push(0);
+          //setRecievedPing(newRecievedPing);
+          setRecievedPing(prevRecievedPing => {
+            let newRecievedPing = [...prevRecievedPing];
+            newRecievedPing.push(0);
+            return newRecievedPing;
+          })
         }
         else {
           playerNumber = reconnectingPlayer;
           let newDisconnectedPlayers = [...disconnectedPlayers];
           newDisconnectedPlayers[playerNumber] = false;
           setDisconnectedPlayers(newDisconnectedPlayers);
+          setRecievedPing(prevRecievedPing => {
+            let newRecievedPing = [...prevRecievedPing];
+            newRecievedPing[playerNumber] = 0;
+            return newRecievedPing;
+          })
         }
         newestConn.on('open', function() {
           console.log("When does this get displayed. and PlayerNumber: "+playerNumber)
           newestConn.on('data', function(data,) {
-            setRecievedMessages(data);
-            setRecievedMessagesPlayer(playerNumber);        
+            if ("header" in data && data.header == pingHeader) {
+              //setRecievedPingPlayer(playerNumber);
+              setRecievedPing(prevRecievedPing => {
+                let newRecievedPing = [...prevRecievedPing];
+                newRecievedPing[playerNumber] = 0;
+                return newRecievedPing;
+              })
+            }
+            else {
+              setRecievedMessages(data);
+              setRecievedMessagesPlayer(playerNumber);  
+            }
           });
           newestConn.send(
             { message:"You have connected to the boardgame!",
@@ -64,6 +94,14 @@ export const Networking = (props) => {
             setDisconnectingPlayer(newestConn.peer);
           }
         });
+        newestConn.on("close", () => {
+          console.log("Hey man, we see a close right here!");
+        })
+        newestConn.on("disconnected", () => {
+          console.log("Hey man, we see a disconnected right here!");
+          //Has not caught anything yet.
+        })
+
         let newConn;
         if(conn == null)
           newConn = newestConn;
@@ -82,8 +120,11 @@ export const Networking = (props) => {
         newestConn.on('open', function() {
           // Receive messages
           newestConn.on('data', function(data,) {
-            console.log("I recieved something.");
-            setRecievedMessages(data);
+            console.log("I got this data:",data);
+            if ("header" in data && data.header == pingHeader)
+              setRecievedPing(true)
+            else
+              setRecievedMessages(data);
           });
           // Send a test message
           newestConn.send({message: "I am a player who has just joined the game!"});
@@ -110,7 +151,7 @@ export const Networking = (props) => {
       })
     }
     clearMessage();
-  }, [conn, props, newestConn, recievedMessages, disconnectingPlayer, disconnectedPlayers]);
+  }, [conn, props, newestConn, recievedMessages, disconnectingPlayer, disconnectedPlayers, recievedPing]);
 
   const getMessageHeader = () => {
     if (recievedMessages != null) {
@@ -134,7 +175,8 @@ export const Networking = (props) => {
     disconnectedPlayers
   }}>
     <NetworkingMessageSender isHost={props.isHost} numberOfClients={conn != null ? conn.length : 0}>
-      <HostPing isHost={props.isHost} />
+      {props.isHost == true  && <HostPing   pingHeader={pingHeader} recievedPing={recievedPing} setRecievedPing={setRecievedPing} setDisconnectedPlayers={setDisconnectedPlayers} />}
+      {props.isHost == false && <ClientPing pingHeader={pingHeader} recievedPing={recievedPing} setRecievedPing={setRecievedPing} />}
       {props.children}
     </NetworkingMessageSender>
   </NetworkingContext.Provider>
