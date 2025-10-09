@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { NetworkingClientContext } from '../NetworkingClientContext';
 import Peer from 'peerjs';
 
 export default function NetworkingClientSetup(props) {
@@ -8,6 +9,8 @@ export default function NetworkingClientSetup(props) {
   const [ connected, setConnected] = useState(false);
   const [ peer, setPeer ] = useState(null);
   const [ peerID, setPeerID ] = useState(sessionStorage.getItem("peerID"));
+
+  const { setNewestConn } = useContext(NetworkingClientContext);
 
   useEffect(() => {
     const reconnect = () => {
@@ -50,7 +53,7 @@ export default function NetworkingClientSetup(props) {
         }
       })
       let newConn = peer.connect(hostConnectionID);
-      props.setNewestConn(newConn);
+      setNewestConn(newConn);
       setConnected(true);
     }
     //console.log("peer = ", peer);
@@ -64,7 +67,7 @@ export default function NetworkingClientSetup(props) {
       connSetup();
     }
 
-  }, [hostConnectionID, connected, peer, peerID, props]);
+  }, [hostConnectionID, connected, peer, peerID, props, setNewestConn]);
 
   const connectionButton= () => {
     setHostConnectionID(props.hostPeerIDPrefix+connectionIDInput.toUpperCase());

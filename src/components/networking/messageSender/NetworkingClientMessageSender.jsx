@@ -1,10 +1,9 @@
 import { useContext, useState, useEffect } from "react";
-import { NetworkingMessageSenderContext } from "./NetworkingMessageSenderContext"
-import { NetworkingContext } from "../NetworkingContext";
+import { NetworkingClientMessageSenderContext } from "./NetworkingClientMessageSenderContext"
+import { NetworkingClientContext } from "../NetworkingClientContext";
 
-export const NetworkingMessageSender = ( props ) => {
-  //console.log("NETWORKING MESSAGE SENDER IS RENDERING.")
-  const { conn } = useContext(NetworkingContext);
+export const NetworkingClientMessageSender = ( props ) => {
+  const { conn } = useContext(NetworkingClientContext);
   
   const [messagePayload, setMessagePayload] = useState([]);
   const [sendMessages, setSendMessages] = useState(false);
@@ -53,32 +52,20 @@ export const NetworkingMessageSender = ( props ) => {
 
   useEffect(() => {
     if(sendMessages != false) {
-      if (props.isHost) {
-        messagePayload.forEach((playerMessages, player) => {
-          if(conn[player])
-            {
-            if (!("header" in playerMessages))
-              playerMessages.header = messageHeader;
-            conn[player].send(playerMessages);
-          }
-        })
-      }
-      else {
         let message = messagePayload[0]
         if (!("header" in message))
           message.header = messageHeader;
         conn.send(message);
-      }
       setSendMessages(false);
       setMessageHeader("Default Header");
       const newArray = Array.from({ length: props.numberOfClients }, () => []);
       setMessagePayload(newArray);
     }
 
-    messagePayload
+    //messagePayload //Not sure why this was just here chilling. I removed for now.
   }, [conn, sendMessages, messagePayload, props, messageHeader])
 
-  return <NetworkingMessageSenderContext.Provider value={{
+  return <NetworkingClientMessageSenderContext.Provider value={{
       sendObjectToHost,
       addToMessagePayloadToHost,
       addToMessagePayloadToPlayer,
@@ -87,7 +74,7 @@ export const NetworkingMessageSender = ( props ) => {
       sendTheMessages
     }}>
       {props.children}
-    </NetworkingMessageSenderContext.Provider>
+    </NetworkingClientMessageSenderContext.Provider>
 }
 
-export default NetworkingMessageSender
+export default NetworkingClientMessageSender

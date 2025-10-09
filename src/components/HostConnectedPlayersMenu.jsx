@@ -1,8 +1,8 @@
 import { useContext } from "react"
-import { NetworkingContext } from "./networking/NetworkingContext";
+import { NetworkingHostContext } from "./networking/NetworkingHostContext";
 
 export default function HostConnectedPlayersMenu() {
-  const {conn, disconnectedPlayers} = useContext(NetworkingContext);
+  const {conn, disconnectedPlayers} = useContext(NetworkingHostContext);
   let content = []
   disconnectedPlayers.forEach((element, player) => {
     if (disconnectedPlayers[player] == true) {

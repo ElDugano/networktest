@@ -1,8 +1,10 @@
 import { useEffect, useContext } from "react"
-import { NetworkingContext } from "../NetworkingContext";
+//import { NetworkingContext } from "../NetworkingContext";
+import { NetworkingClientContext } from "../NetworkingClientContext";
 
 export default function ClientPing(props) {
-  const { conn } = useContext(NetworkingContext);
+  //const { conn } = useContext(NetworkingContext);
+  const { conn } = useContext(NetworkingClientContext);
 
   useEffect(() => {
     if (props.recievedPing == true) {

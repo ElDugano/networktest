@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import Peer from 'peerjs';
+import { NetworkingHostContext } from '../NetworkingHostContext';
 
 export default function NetworkingHostSetup(props) {
   const [myPeerID, setMyPeerID] = useState(null);
+  const { setNewestConn } = useContext(NetworkingHostContext); 
 
   useEffect(() => {
     if(myPeerID == null) {
@@ -17,7 +19,7 @@ export default function NetworkingHostSetup(props) {
       newPeerPromise.then(result =>{
         result.peer.on('connection', function(newConn) {
           console.log("We just connected!");
-          props.setNewestConn(newConn);
+          setNewestConn(newConn);
           console.log("Their PeerID is:", newConn.peer)
         });
         setMyPeerID(shortID);
@@ -47,7 +49,7 @@ export default function NetworkingHostSetup(props) {
         });
       });
     }
-  }, [myPeerID, props]);
+  }, [myPeerID, props, setNewestConn]);
 
   const makeid = (length) => {
     var result           = '';

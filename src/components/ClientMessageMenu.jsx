@@ -1,8 +1,8 @@
 import { useContext, useState } from "react"
-import { NetworkingMessageSenderContext } from "./networking/messageSender/NetworkingMessageSenderContext"
+import { NetworkingClientMessageSenderContext } from "./networking/messageSender/NetworkingClientMessageSenderContext";
 
 export default function ClientMessageMenu() {
-  const { addToMessagePayloadToHost, sendTheMessages } = useContext(NetworkingMessageSenderContext);
+  const { addToMessagePayloadToHost, sendTheMessages } = useContext(NetworkingClientMessageSenderContext);
 
   const [count, setCount] = useState(0);
 

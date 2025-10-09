@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { /*useContext,*/ useEffect } from "react";
-import { NetworkingContext } from "../NetworkingContext";
+import { NetworkingHostContext } from "../NetworkingHostContext";
 
-import { NetworkingMessageSenderContext } from "../messageSender/NetworkingMessageSenderContext";
+import { NetworkingHostMessageSenderContext } from "../messageSender/NetworkingHostMessageSenderContext";
 
 const HostMessageReciever = () => {
-  const { addToMessagePayloadToPlayer, addToMessagePayloadToAllPlayers, sendTheMessages } = useContext(NetworkingMessageSenderContext);
-  const { recievedMessages, recievedMessagesPlayer, getMessageHeader } = useContext(NetworkingContext);
+  const { addToMessagePayloadToPlayer, addToMessagePayloadToAllPlayers, sendTheMessages } = useContext(NetworkingHostMessageSenderContext);
+  const { recievedMessages, recievedMessagesPlayer, getMessageHeader } = useContext(NetworkingHostContext);
 
   useEffect(() => {
     //console.log("The message header is: ", recievedMessages.header);
